@@ -1,11 +1,14 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 
+const {ObjectID} = require('mongodb');
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./model/todo');
 var {User} = require('./model/user');
 
 var app = express();
+
+var port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -35,9 +38,28 @@ app.get('/todos', (req,res) => {
 
 });
 
+app.get('/todos/:id', (req,res) => {
+        var _id= req.params.id;
 
-app.listen(3000, ()=> {
-    console.log('Server started listening on port 3000')
+        if(!ObjectID.isValid(_id)){
+            res.status(404).send({
+                error: "Id is not valid"
+            });
+            return
+        }
+
+        Todo.findById(_id).then((todo) => {
+            if(!todo) return res.status(404).send({error : "Todo not found in mongoDB"});
+            res.send({todo});
+
+        })
+
+
+});
+
+
+app.listen(port, ()=> {
+    console.log(`Server started listening on port ${port}`);
 });
 
 module.exports = {app};
