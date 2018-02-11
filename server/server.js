@@ -57,6 +57,27 @@ app.get('/todos/:id', (req,res) => {
 
 });
 
+app.delete('/todos/:id', (req,res) => {
+    var _id = req.params.id;
+    
+    if(!ObjectID.isValid(_id)){
+        res.status(404).send({
+            error: "Id is not valid"
+        });
+        return
+    }
+
+    Todo.findByIdAndRemove(_id).then((todo) => {
+        if(!todo) return res.status(404).send({error : "Todo not found in mongoDB"});
+        res.send({todo});
+
+    }).catch((e) => {
+        res.status(404).send(e);
+    })
+
+
+})
+
 
 app.listen(port, ()=> {
     console.log(`Server started listening on port ${port}`);
