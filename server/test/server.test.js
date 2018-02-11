@@ -99,12 +99,57 @@ describe('GET /todos:id', () => {
         .end(done);
     })
 
-    it("Should return 404 with no data in mongoDB" , (done) => {
+    it("Should return 404 with Invalid Object ID" , (done) => {
         var tempId = new ObjectID().toHexString();
         request(app)
         .get(`/todos/${tempId}56`)
         .expect(404)
         .end(done);
+    })
+
+});
+
+
+describe('DELETE /todos:id', () => {
+
+    it("Should delte todo.", (done) => {
+        request(app)
+        .delete(`/todos/${todos[0]._id.toHexString()}`)
+        .expect(200)
+        .expect((res) => {
+            expect(res.body.todo.text).toBe(todos[0].text);
+            expect(res.body.todo._id).toBe(todos[0]._id.toHexString());
+        })
+        .end((err,res) => {
+            if(err) return done(err);
+
+            Todo.findById(todos[0]._id.toHexString())
+                .then((todo) => {
+                    expect(todo).toNotExist();
+                    done();
+                }).catch((e) => done(e))
+
+        });
+        
+        
+
+
+    });
+
+    it("Should return 404 with no data in mongoDB" , (done) => {
+        var tempId = new ObjectID().toHexString();
+        request(app)
+        .delete(`/todos/${tempId}`)
+        .expect(404)
+        .end(done);
+    })
+
+    it("Should return 404 with invalid Object ID." , (done) => {
+        var tempId = new ObjectID().toHexString();
+        request(app)
+        .get(`/todos/${tempId}56`)
+        .expect(404)
+        .end((done));
     })
 
 });
