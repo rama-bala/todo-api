@@ -1,3 +1,5 @@
+require('./config/config');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
@@ -9,7 +11,7 @@ var { User } = require('./model/user');
 
 var app = express();
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT;
 
 app.use(bodyParser.json());
 
@@ -110,6 +112,7 @@ app.patch('/todos/:id', (req, res) => {
     })
 
 })
+
 
 app.listen(port, () => {
     console.log(`Server started listening on port ${port}`);
